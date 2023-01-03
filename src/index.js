@@ -62,10 +62,10 @@ app.post('/register', async (req, res) => {
                 avatar,
             },
         });
-        res.status(201).send({ representative });
+        res.status(201).send({ representative, created: true });
     } catch (error) {
         console.error(error);
-        res.status(404).send(error);
+        res.status(404).send({ error, created: false });
     }
 });
 
@@ -78,7 +78,9 @@ app.post('/login', async (req, res) => {
                 email,
             }
         })
-        representative.password === password ? res.status(201).send({ representative }) : res.status(404).send({ message: "Invalid password" });
+        representative.password === password ?
+            res.status(201).send({ representative, logged: true }) :
+            res.status(404).send({ logged: false });
     } catch (error) {
         console.error(error);
         res.status(404).send(error);
