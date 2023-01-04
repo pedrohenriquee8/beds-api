@@ -39,6 +39,37 @@ app.get('/hospitals', async (_, res) => {
     }
 });
 
+app.get('/:cityId/hospitals', async (req, res) => {
+    const cityId = req.params.cityId;
+
+    try {
+        const hospitalsByCityId = await prisma.hospital.findMany({
+            where: {
+                cityId: Number(cityId),
+            }, select: {
+                id: true,
+                name: true,
+                type: true,
+                status: true,
+                photoUrl: true,
+                Bed: {
+                    select: {
+                        id: true,
+                        numberBeds: true,
+                        typeBed: true,
+                        status: true,
+                        photoUrl: true,
+                    }
+                },
+            }
+        });
+        res.status(200).send(hospitalsByCityId);
+    } catch (error) {
+        console.error(error);
+        res.status(404).send(error);
+    }
+});
+
 app.get('/beds', async (_, res) => {
     try {
         const beds = await prisma.bed.findMany();
@@ -76,7 +107,7 @@ app.post('/login', async (req, res) => {
         const representative = await prisma.representative.findUnique({
             where: {
                 email,
-            }
+            },
         })
         representative.password === password ?
             res.status(201).send({ representative, logged: true }) :
