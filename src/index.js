@@ -15,7 +15,6 @@ app.get('/representatives', async (_, res) => {
         res.status(200).send(representative);
     } catch (error) {
         console.error(error);
-        res.status(404).send(error);
     }
 });
 
@@ -25,7 +24,6 @@ app.get('/cities', async (_, res) => {
         res.status(200).send(cities);
     } catch (error) {
         console.error(error);
-        res.status(404).send(error);
     }
 });
 
@@ -35,7 +33,6 @@ app.get('/hospitals', async (_, res) => {
         res.status(200).send(hospitals);
     } catch (error) {
         console.error(error);
-        res.status(404).send(error);
     }
 });
 
@@ -66,7 +63,6 @@ app.get('/:cityId/hospitals', async (req, res) => {
         res.status(200).send(hospitalsByCityId);
     } catch (error) {
         console.error(error);
-        res.status(404).send(error);
     }
 });
 
@@ -76,7 +72,6 @@ app.get('/beds', async (_, res) => {
         res.status(200).send(beds);
     } catch (error) {
         console.error(error);
-        res.status(404).send(error);
     }
 });
 
@@ -93,10 +88,10 @@ app.post('/register', async (req, res) => {
                 avatar,
             },
         });
-        res.status(201).send({ representative, created: true });
+        res.status(201).send({ representative });
     } catch (error) {
         console.error(error);
-        res.status(404).send({ error, created: false });
+        res.status(400).send({ message: 'Representative already exists' });
     }
 });
 
@@ -109,12 +104,16 @@ app.post('/login', async (req, res) => {
                 email,
             },
         })
-        representative.password === password ?
-            res.status(201).send({ representative, logged: true }) :
-            res.status(404).send({ logged: false });
+
+        if (representative) {
+            representative.password === password ?
+                res.status(201).send({ representative }) :
+                res.status(404).send({ message: 'Incorrect password' });
+        }
+
+        res.status(404).send({ message: 'Representative not found' });
     } catch (error) {
         console.error(error);
-        res.status(404).send(error);
     }
 });
 
