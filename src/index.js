@@ -24,6 +24,7 @@ app.get('/cities', async (_, res) => {
         res.status(200).send(cities);
     } catch (error) {
         console.error(error);
+        res.status(400).send({ message: 'City not found' });
     }
 });
 

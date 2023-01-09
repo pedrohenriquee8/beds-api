@@ -26,6 +26,8 @@ model City {
   state       String
   description String
   photoUrl    String?
+  latitude    Float
+  longitude   Float
 
   Hospital Hospital[]
   Bed      Bed[]
