@@ -21,10 +21,9 @@ app.get('/representatives', async (_, res) => {
 app.get('/cities', async (_, res) => {
     try {
         const cities = await prisma.city.findMany();
-        res.status(200).send(cities);
+        cities ? res.status(200).send(cities) : res.status(404).send({ message: 'City not found' });
     } catch (error) {
         console.error(error);
-        res.status(400).send({ message: 'City not found' });
     }
 });
 
@@ -76,8 +75,30 @@ app.get('/beds', async (_, res) => {
     }
 });
 
+app.get('/:cityId/beds', async (req, res) => {
+    const cityId = req.params.cityId;
+
+    try {
+        const bedsByCityId = await prisma.bed.findMany({
+            where: {
+                cityId: Number(cityId),
+            }, select: {
+                id: true,
+                hospitalId: true,
+                cityId: true,
+                typeBed: true,
+                status: true,
+                photoUrl: true
+            }
+        });
+        res.status(200).send(hospitalsByCityId);
+    } catch (error) {
+        console.log(error);
+    }
+});
+
 app.post('/register', async (req, res) => {
-    const { name, email, password, cpf, avatar } = req.body;
+    const { name, email, password, cpf } = req.body;
 
     try {
         const representative = await prisma.representative.create({
@@ -86,7 +107,6 @@ app.post('/register', async (req, res) => {
                 email,
                 password,
                 cpf,
-                avatar,
             },
         });
         res.status(201).send({ representative });
